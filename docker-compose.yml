@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mysql-service:
+    image: mysql:8.0
+    container_name: mysql-lab
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Malakoub1@
+      MYSQL_DATABASE: demo_db
+    volumes:
+      - mysql-storage:/var/lib/mysql
+
+  spring-service:
+    image: ens/springdocker-app:v1
+    container_name: spring-lab
+    depends_on:
+      - mysql-service
+    command: sh -c "sleep 25 && java -jar application.jar"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-service:3306/demo_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Malakoub1@
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+
+volumes:
+  mysql-storage:
